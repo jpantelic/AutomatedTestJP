@@ -1,7 +1,13 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
 using RestSharp;
 using RestSharp.Authenticators;
+using System;
+using System.IO;
 using System.Net;
+using Assert = NUnit.Framework.Assert;
 
 namespace APIAutomatedTest
 {
@@ -9,11 +15,11 @@ namespace APIAutomatedTest
     public class UnitTest1
     {
         [TestMethod]
-        public void TestMethod1()
+        public void GetFromStream()
         {
-            RestClient restClient = new RestClient("https://postman-echo.com/stream/10");
+            RestClient restClient = new RestClient("https://postman-echo.com/");
 
-            RestRequest restRequest = new RestRequest("", Method.GET);
+            RestRequest restRequest = new RestRequest("stream/10", Method.GET);
 
             IRestResponse restResponse = restClient.Execute(restRequest);
 
@@ -21,22 +27,36 @@ namespace APIAutomatedTest
 
             System.Console.WriteLine(response);
 
-            Assert.AreEqual(restResponse.StatusCode, HttpStatusCode.OK, "Get request status is not ok");
+            JObject obs = JObject.Parse(restResponse.Content);
+            Assert.That(obs["host"].ToString, Is.EqualTo("postman-echo.com"), "Host parameter is not correct");
+
+            //Assert.AreEqual(restResponse.StatusCode, HttpStatusCode.OK, "Get request status is not ok");
         }
 
         [TestMethod]
-        public void firstPost()
+        public void PostFromJsonFile()
         {
                            
-            RestClient restClient = new RestClient("https://postman-echo.com/post");
-            RestRequest restRequest = new RestRequest(Method.POST);
-            restRequest.AddParameter("application/json", "C://People.json", ParameterType.RequestBody);
-            IRestResponse restResponse = restClient.Execute(restRequest);
+            var client = new RestClient("https://postman-echo.com/");
+            var request = new RestRequest("post", Method.POST);
+            request.RequestFormat = DataFormat.Json;            
+            var file = @"TestData\People.json";
 
-            System.Console.WriteLine("Post response" + restResponse.Content);
+            var jsonData = JsonConvert.DeserializeObject<Person>(File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, file)).ToString());
+            request.AddJsonBody(jsonData);            
+            var response = client.Execute(request);
 
-           
+            Assert.AreEqual(response.StatusCode, HttpStatusCode.OK, "Post response is not ok");
         }
+
+        private class Person
+        {
+            public string name { get; set; }
+            public string lastName { get; set; }
+            public string occupation { get; set; }
+            public string age { get; set; }
+            public string region { get; set; }
+    }
 
         [TestMethod]
         public void firstAuthenticators()
