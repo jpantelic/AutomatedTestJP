@@ -11,10 +11,10 @@ using Assert = NUnit.Framework.Assert;
 
 namespace APIAutomatedTest
 {
-    [TestClass]
+    [TestFixture]
     public class UnitTest1
     {
-        [TestMethod]
+        [Test]
         public void GetFromStream()
         {
             RestClient restClient = new RestClient("https://postman-echo.com/");
@@ -33,7 +33,7 @@ namespace APIAutomatedTest
             //Assert.AreEqual(restResponse.StatusCode, HttpStatusCode.OK, "Get request status is not ok");
         }
 
-        [TestMethod]
+        [Test]
         public void PostFromJsonFile()
         {
                            
@@ -58,13 +58,13 @@ namespace APIAutomatedTest
             public string region { get; set; }
     }
 
-        [TestMethod]
+        [Test]
         public void firstAuthenticators()
         {
-            RestClient restClient = new RestClient("https://postman-echo.com/basic-auth");
+            RestClient restClient = new RestClient("https://postman-echo.com/");
             restClient.Authenticator = new HttpBasicAuthenticator("postman", "password");
 
-            RestRequest restRequest = new RestRequest("", Method.GET);
+            RestRequest restRequest = new RestRequest("basic-auth", Method.GET);
             IRestResponse restResponse = restClient.Execute(restRequest);
 
             Assert.AreEqual(restResponse.StatusCode, HttpStatusCode.OK, "Get request status, or username/password is/are not ok");
