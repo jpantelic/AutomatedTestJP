@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -7,7 +6,7 @@ using RestSharp.Authenticators;
 using System;
 using System.IO;
 using System.Net;
-using Assert = NUnit.Framework.Assert;
+
 
 namespace APIAutomatedTest
 {
